@@ -1,0 +1,29 @@
+// Teste abrangente da Mini-Lang
+/* isso é um comentári
+
+o
+*//
+
+
+
+var x: int = 10;
+var y: int = 20;
+
+var flag: bool = true;
+
+def somar(a: int, b: int): int {
+    return a + b;
+}
+
+if (x < y) {
+    print x;
+} else {
+    set x = somar(x, 5);
+}
+
+while (x > 0) {
+    set x = x - 1;
+    if (x == 5) {
+        print Metade;
+    }
+}
