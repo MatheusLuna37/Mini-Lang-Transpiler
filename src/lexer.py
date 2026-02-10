@@ -39,7 +39,7 @@ class Token:
 class Lexer:
     def __init__(self, file: str, print_tokens: bool = False):
         self._source = file.read()
-        self._line = 1 # numero da linha atual
+        self._line = 0 # numero da linha atual
         self._pos = 0 # posicao atual na string do codigo fonte
         self._token_table = {} # tabela de tokens
         self._init_id_table() # inicializa tabela de identificadores
@@ -93,36 +93,40 @@ class Lexer:
     def scan(self):
         # Implementação do método de varredura (scan) do lexer
 
-        # skip whitespace
-        while self.peek() and self.peek().isspace():
-            self._get_next_char()
-
-        # ignora comentários
-        while self.peek() == '/':
-            self._get_next_char()
-            if self.peek() == '/':
-                while self.peek() and self.peek() != '\n':
-                    self._get_next_char()
-                if self.peek() == '\n':
-                    self._get_next_char()
-                    self._line += 1
-            elif self.peek() == '*':
+        # skip whitespace e comentários
+        while self.peek() and (self.peek().isspace() or self.peek() == '/'):
+            # skip whitespace
+            while self.peek() and self.peek().isspace():
                 self._get_next_char()
-                while True:
-                    if not self.peek():
-                        return Token(0)  # EOF
-                    ch = self._get_next_char()
-                    if ch == '*' and self.peek() == '/':
+
+            leave = False
+            # ignora comentários
+            while self.peek() == '/':
+                self._get_next_char()
+                if self.peek() == '/':
+                    while self.peek() and self.peek() != '\n':
                         self._get_next_char()
-                        break
-            else:
-                # Não é um comentário, retorna o token '/'
-                self._pos -= 1
+                    if self.peek() == '\n':
+                        self._get_next_char()
+                        self._line += 1
+                elif self.peek() == '*':
+                    self._get_next_char()
+                    while True:
+                        if not self.peek():
+                            return Token(0)  # EOF
+                        ch = self._get_next_char()
+                        if ch == '*' and self.peek() == '/':
+                            self._get_next_char()
+                            break
+                else:
+                    # Não é um comentário, retorna o token '/'
+                    self._pos -= 1
+                    leave = True
+                    break
+            if leave:
                 break
 
-        # skip whitespace again
-        while self.peek() and self.peek().isspace():
-            self._get_next_char()
+            
             
         # Retorna números
         if self.peek() and self.peek().isdigit():
