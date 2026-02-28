@@ -1,5 +1,5 @@
 import sys
-from lexer import Lexer, TAG  # Ajuste conforme o nome do seu arquivo e classe
+from lexer import Lexer, TAG, LexerError # Ajuste conforme o nome do seu arquivo e classe
 
 def main():
     # Nome do arquivo de entrada
@@ -34,6 +34,8 @@ def main():
 
     except FileNotFoundError:
         print(f"Erro: Arquivo '{filename}' não encontrado.")
+    except LexerError as le:
+        print(f"Erro léxico: {le.message}")
     except Exception as e:
         print(f"Erro durante a execução: {e}")
 
