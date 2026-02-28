@@ -22,6 +22,8 @@ class TAG(Enum):
     TRUE = 273
     FALSE = 274
     INTEGER = 275
+    REAL = 276
+    STRING = 277
 
 
 # Definimos uma exceção personalizada para evitar confusão 
@@ -131,14 +133,33 @@ class Lexer:
         # Retorna números
         if self.peek() and self.peek().isdigit():
             num_str = ""
-            while self.peek() and self.peek().isdigit():
+            dot = False
+            while self.peek() and (self.peek().isdigit() or (not dot and self.peek() == '.')):
                 ch = self._get_next_char()
                 num_str += ch
+                if ch == '.':
+                    dot = True
                 
             lex = num_str
 
-            return Token(TAG.INTEGER.value, lex)
-        
+            if dot and self.peek() != '.':
+                return Token(TAG.REAL.value, lex)
+            elif not dot:
+                return Token(TAG.INTEGER.value, lex)
+            else:
+                raise LexerError(f"Número mal formatado na linha {self._line}")
+                
+        if self.peek() and self.peek() == '"':
+            self._get_next_char()  # consome as aspas de abertura
+            str_val = ""
+            while self.peek() and self.peek().isprintable() and self.peek() != '"':
+                str_val += self._get_next_char()
+            if self.peek() == '"':
+                self._get_next_char()  # consome as aspas de fechamento
+                return Token(TAG.STRING.value, str_val)
+            else:
+                raise LexerError(f"String não fechada na linha {self._line}")
+
         # Trata identificadores e palavras reservadas
         if self.peek() and (self.peek().isalnum() or self.peek() == '_'):
             id_str = []
