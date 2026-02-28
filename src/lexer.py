@@ -54,23 +54,23 @@ class Lexer:
  
     def _init_id_table(self):
         self._id_table = {
-            "int": Token(TAG.TYPE.value, "int"),
-            "real": Token(TAG.TYPE.value, "real"),
-            "bool": Token(TAG.TYPE.value, "bool"),
-            "void": Token(TAG.TYPE.value, "void"),
-            "true": Token(TAG.TRUE.value, "true"),
-            "false": Token(TAG.FALSE.value, "false"),
-            "if": Token(TAG.IF.value, "if"),
-            "else": Token(TAG.ELSE.value, "else"),
-            "def": Token(TAG.DEF.value, "def"),
-            "while": Token(TAG.WHILE.value, "while"),
-            "return": Token(TAG.RETURN.value, "return"),
-            "print": Token(TAG.PRINT.value, "print"),
-            "var": Token(TAG.VAR.value, "var"),
-            "set": Token(TAG.SET.value, "set"),
-            "and": Token(TAG.AND.value, "and"),
-            "or": Token(TAG.OR.value, "or"),
-            "not": Token(TAG.NOT.value, "not")
+            "int": Token(TAG.TYPE, "int"),
+            "real": Token(TAG.TYPE, "real"),
+            "bool": Token(TAG.TYPE, "bool"),
+            "void": Token(TAG.TYPE, "void"),
+            "true": Token(TAG.TRUE, "true"),
+            "false": Token(TAG.FALSE, "false"),
+            "if": Token(TAG.IF, "if"),
+            "else": Token(TAG.ELSE, "else"),
+            "def": Token(TAG.DEF, "def"),
+            "while": Token(TAG.WHILE, "while"),
+            "return": Token(TAG.RETURN, "return"),
+            "print": Token(TAG.PRINT, "print"),
+            "var": Token(TAG.VAR, "var"),
+            "set": Token(TAG.SET, "set"),
+            "and": Token(TAG.AND, "and"),
+            "or": Token(TAG.OR, "or"),
+            "not": Token(TAG.NOT, "not")
         }
 
         
@@ -146,9 +146,9 @@ class Lexer:
             lex = num_str
 
             if real and self.peek() != '.':
-                return Token(TAG.REAL.value, lex)
+                return Token(TAG.REAL, lex)
             elif not dot:
-                return Token(TAG.INTEGER.value, lex)
+                return Token(TAG.INTEGER, lex)
             else:
                 raise LexerError(f"Número mal formatado na linha {self._line}")
                 
@@ -160,7 +160,7 @@ class Lexer:
                 str_val += self._get_next_char()
             if self.peek() == '"':
                 self._get_next_char()  # consome as aspas de fechamento
-                return Token(TAG.STRING.value, str_val)
+                return Token(TAG.STRING, str_val)
             else:
                 raise LexerError(f"String não fechada na linha {self._line}")
 
@@ -174,7 +174,7 @@ class Lexer:
             if id_str in self._id_table:
                 return self._id_table[id_str]
             else:
-                token = Token(TAG.ID.value, id_str)
+                token = Token(TAG.ID, id_str)
                 self._token_table[id_str] = token
                 return token
             
@@ -184,22 +184,22 @@ class Lexer:
         if ch == '>' and self._pos + 1 < len(self._source) and self._source[self._pos + 1] == '=':
             self._get_next_char()
             self._get_next_char()
-            return Token(TAG.GTE.value, '>=')
+            return Token(TAG.GTE, '>=')
         elif ch == '<' and self._pos + 1 < len(self._source) and self._source[self._pos + 1] == '=':
             self._get_next_char()
             self._get_next_char()
-            return Token(TAG.LTE.value, '<=')
+            return Token(TAG.LTE, '<=')
         elif ch == '=' and self._pos + 1 < len(self._source) and self._source[self._pos + 1] == '=':
             self._get_next_char()
             self._get_next_char()
-            return Token(TAG.EQ.value, '==')
+            return Token(TAG.EQ, '==')
         elif ch == '!' and self._pos + 1 < len(self._source) and self._source[self._pos + 1] == '=':
             self._get_next_char()
             self._get_next_char()
-            return Token(TAG.NEQ.value, '!=')
+            return Token(TAG.NEQ, '!=')
         else:
             if ch:
                 self._get_next_char()
-                return Token(ord(ch), ch)
+                return Token(ch, ch)
             else:
-                return Token(0)  # EOF
+                return Token(None, "EOF")  # EOF
