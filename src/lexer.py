@@ -134,7 +134,10 @@ class Lexer:
         if self.peek() and self.peek().isdigit():
             num_str = ""
             dot = False
+            real = False
             while self.peek() and (self.peek().isdigit() or (not dot and self.peek() == '.')):
+                if dot:
+                    real = True
                 ch = self._get_next_char()
                 num_str += ch
                 if ch == '.':
@@ -142,13 +145,14 @@ class Lexer:
                 
             lex = num_str
 
-            if dot and self.peek() != '.':
+            if real and self.peek() != '.':
                 return Token(TAG.REAL.value, lex)
             elif not dot:
                 return Token(TAG.INTEGER.value, lex)
             else:
                 raise LexerError(f"Número mal formatado na linha {self._line}")
                 
+        # Trata strings
         if self.peek() and self.peek() == '"':
             self._get_next_char()  # consome as aspas de abertura
             str_val = ""
@@ -175,7 +179,7 @@ class Lexer:
                 return token
             
         
-        # operators
+        # operadores
         ch = self.peek()
         if ch == '>' and self._pos + 1 < len(self._source) and self._source[self._pos + 1] == '=':
             self._get_next_char()
