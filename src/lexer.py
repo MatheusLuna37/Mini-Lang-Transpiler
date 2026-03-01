@@ -39,8 +39,9 @@ class Token:
         self.lexeme = lexeme
 
 class Lexer:
-    def __init__(self, file: str, print_tokens: bool = False):
-        self._source = file.read()
+    def __init__(self, filename: str, print_tokens: bool = False):
+        with open(filename, 'r', encoding='utf-8') as file:
+            self._source = file.read()
         self._line = 0 # numero da linha atual
         self._pos = 0 # posicao atual na string do codigo fonte
         self._token_table = {} # tabela de tokens
