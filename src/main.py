@@ -1,43 +1,8 @@
-import sys
-from lexer import Lexer, TAG, LexerError # Ajuste conforme o nome do seu arquivo e classe
+import json
+from parser import Parser
 
-def main():
-    # Nome do arquivo de entrada
-    filename = "tests/exemplo1.mini"
+parser = Parser("tests/exemplo1.mini")
+ast = parser.start()
 
-    try:
-        # Lê todo o conteúdo do arquivo
-        with open(filename, 'r') as file:
-            # Inicializa o Scanner com o código fonte
-            lexer = Lexer(file)
-        
-        print(f"--- Iniciando Análise Léxica de {filename} ---")
-        print(f"{'TAG':<15} | {'VALOR (LEXEMA)':<20}")
-        print("-" * 40)
-
-        # Loop para pegar tokens até acabar
-        while True:
-            # Chama o método que retorna o próximo token.
-            # Se o seu método tiver outro nome (ex: next_token), mude aqui.
-            token = lexer.scan() 
-
-            if token.tag == 0:
-                break
-            
-            # Imprime no terminal
-            print(f"{lexer.get_line()} -> ", end="")
-            try:
-                print(f"<{TAG(token.tag).name}, {token.lexeme}>")
-            except:
-                print(f"<{chr(token.tag)}, {token.lexeme}>")
-
-
-    except FileNotFoundError:
-        print(f"Erro: Arquivo '{filename}' não encontrado.")
-    except LexerError as le:
-        print(f"Erro léxico: {le.message}")
-    except Exception as e:
-        print(f"Erro durante a execução: {e}")
-
-if __name__ == "__main__":
-    main()
+# Gera o JSON indentado conforme exigido
+print(json.dumps(ast.to_dict(), indent=4, ensure_ascii=False))
